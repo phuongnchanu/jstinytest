@@ -1,0 +1,72 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // slice(array[, begin[, end]])
+      // begin - zero-based index at which to begin extraction.
+      // end - zero-based index before which to end extraction.
+
+  // Return value
+    // a new array containing extracted elements.
+
+  var slice = function (array, begin, end) {
+    var slicedArray = [];
+    var length = array.length;
+
+    // If beginIndex >= 0, let beginIndex be beginIndex
+    // If beginIndex < 0, let beginIndex be length - Math.abs(beginIndex)
+      // If beginIndex < 0, let beginIndex be 0
+    var beginIndex = (typeof begin == 'number') && begin || 0;
+    beginIndex = Math.max(beginIndex >= 0 ? beginIndex : length + beginIndex, 0);
+
+    // If endIndex >= 0, let endIndex be endIndex
+      // If endIndex > array.length, let endIndex be array.length
+    // If endIndex < 0, let endIndex be length - Math.abs(endIndex)
+    var endIndex = end || length;
+    if (typeof endIndex == 'number') {
+      endIndex = Math.min(endIndex >= 0 ? endIndex : length + endIndex, length);
+    } else {
+      endIndex = 0;
+    }
+
+    for (var i = beginIndex; i < endIndex; i++) {
+      slicedArray.push(array[i]);
+    }
+
+    return slicedArray;
+  };
+
+  tests({
+    'If no begin, it should return a shallow copy of the whole original array.': function () {
+      var originalArray = [1];
+      var slicedArray = slice(originalArray);
+      eq(slicedArray === originalArray, false);
+      eq(JSON.stringify(slicedArray), JSON.stringify(originalArray));
+    },
+    'If 0 <= begin < array.length, it should begin extraction from begin.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], 1);
+      var expectedArray = [2, 3, 4, 5];
+      eq(JSON.stringify(slicedArray), JSON.stringify(expectedArray));
+    },
+    'If begin >= array.length, it should return an empty array.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], 5);
+      eq(JSON.stringify(slicedArray), JSON.stringify([]));
+    },
+    'If begin < 0, it should take begin as the offset from the end of the array.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], -1);
+      eq(JSON.stringify(slicedArray), JSON.stringify([5]));
+    },
+    'If 0 < end < array.length, it should extract up to but not including end.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], 1, 3);
+      eq(JSON.stringify(slicedArray), JSON.stringify([2, 3]));
+    },
+    'If end >= array.length, it should slice through the end of the array.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], 0, 10);
+      var expectedArray = [1, 2, 3, 4, 5];
+      eq(JSON.stringify(slicedArray), JSON.stringify(expectedArray));
+    },
+    'If end < 0, it should take end as the offset from the end of the array.': function () {
+      var slicedArray = slice([1, 2, 3, 4, 5], 0, -1);
+      eq(JSON.stringify(slicedArray), JSON.stringify([1, 2, 3, 4]));
+    },
+  });
+</script>

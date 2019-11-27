@@ -1,0 +1,112 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // fill(array, value[, start[, end]])
+      // value - value to fill an array.
+      // start - start index, defaults to 0.
+      // end - end index, defaults to array's length.
+
+  // Return value:
+    // the modified array.
+
+  var fill = function (array, value, start, end) {
+    var length = array.length;
+
+    var startIndex = (typeof start == 'number') && start || 0;
+    startIndex = startIndex >= 0 ? startIndex : Math.max(startIndex + length, 0);
+
+    var endIndex = arguments.length < 4 ? length : end;
+    if (typeof endIndex === 'number' && !isNaN(endIndex)) {
+      endIndex = endIndex >= 0 ? endIndex : Math.min(endIndex + length, length);
+    } else {
+      endIndex = 0;
+    }
+
+    for (i = startIndex; i < endIndex; i++) {
+      array[i] = value;
+    }
+
+    return array;
+  };
+
+  tests({
+    'It should return the modified array.': function () {
+      var filledArray = fill([1, 2, 3]);
+      eq(Array.isArray(filledArray), true);
+    },
+    'It should actually fills elements from start to end with a static value.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [0, 0, 3];
+      fill(originalArray, 0, 0, 2);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 2, 3];
+      fill(originalArray, 0, 'd', 'd');
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If no value, value should fallback to undefined.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [undefined, undefined, undefined];
+      fill(originalArray);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If no start, start should fallback to 0.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [0, 0, 0];
+      fill(originalArray, 0);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If start is negative, start should equal to array.length + start.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 0, 0];
+      fill(originalArray, 0, -2, 3);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [0, 0, 0];
+      fill(originalArray, 0, -4, 3);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If no end, end should fallback to array.length.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 0, 0];
+      fill(originalArray, 0, 1);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If end is negative, end should equal to array.length + end.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 0, 3];
+      fill(originalArray, 0, 1, -1);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 2, 3];
+      fill(originalArray, 0, 1, -4);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'Edge cases: start or end is not a number.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 2, 3];
+      fill(originalArray, 4, NaN, NaN);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [0, 0, 0];
+      fill(originalArray, 0, 'd');
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [1, 2, 3];
+      fill(originalArray, 0, 'd', 'd');
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'When it get passed an object, it should fill with references to that object.': function () {
+      var array = Array(3);
+      var expectedArray = [{ hi: "hi" }, { hi: "hi" }, { hi: "hi" }];
+      fill(array, {});
+      array[0].hi = 'hi';
+      eq(JSON.stringify(array), JSON.stringify(expectedArray));
+    },
+  });
+</script>

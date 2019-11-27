@@ -1,0 +1,68 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // push(array, element1[, ...[elementN]]);
+      // elementN - the elements to add at the end of the array.
+  
+  // Return value
+    // the new length property of the array.
+
+  var push = function (array) {
+    var length = array.length;
+    if (arguments.length < 2) return array.length;
+
+    // Object
+    if (Object.prototype.toString.call(array) === '[object Object]') {
+      if (!length) {
+        array.length = 0;
+      }
+    }
+
+    for (i = 1; i < length; i++) {
+      array[array.length] = arguments[i];
+    }
+
+    array.length = length + arguments.length - 1;
+
+    return array.length;
+  };
+
+  tests({
+    'If no element, it should immediately return array.length.': function () {
+      var count = push([1, 2, 3]);
+      eq(count, 3);
+
+      var count = push([]);
+      eq(count, 0);
+
+      var count = push([,,,]);
+      eq(count, 3);
+    },
+    'If element, it should add the element to the end of the array.': function () {
+      var array = [1, 2, 3];
+      var expectedArray = [1, 2, 3, 4];
+      push(array, 4);
+      eq(JSON.stringify(array), JSON.stringify(expectedArray));
+    },
+
+    'If elements, it should add the elements to the end of the array.': function () {
+      var array = [1, 2, 3];
+      var expectedArray = [1, 2, 3, 4, 5];
+      push(array, 4, 5);
+      eq(JSON.stringify(array), JSON.stringify(expectedArray));
+    },
+
+    'If element, it should return new length of the array.': function () {
+      var array = [1, 2, 3];
+      var count = push(array, 4);
+      eq(array.length, count);
+    },
+    'It should work with object in array-like fashion.': function () {
+      var object = {
+        length: 0
+      };
+      push(object, {}, {});
+      eq(object.length, 2);
+    },
+  });
+</script>

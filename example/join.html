@@ -1,0 +1,58 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // join(array[, separator]);
+      // separator - a string to separate each pair of adjacent elements of the array.
+
+  // Return value:
+    // a string with all array elements joined.
+
+  var join = function (array, separator) {
+    var length = array.length;
+    var joinedString = '';
+    var separator = arguments.length < 2 ? ',' : separator;
+
+    for (var i = 0; i < length; i++) {
+      var stringToJoin = array[i] || Number.isNaN(array[i]) ? array[i] : '';
+      if (i === length - 1) {
+        joinedString += stringToJoin;
+      } else {
+        joinedString += stringToJoin + separator;
+      }
+    }
+
+    return joinedString;
+  };
+
+  tests({
+    'If array is empty, it should return empty string.': function () {
+      var joinedString = join([], '-');
+      eq(joinedString, '');
+    },
+    'If no separator, it should separate array elements with a comma.': function () {
+      var joinedString = join([1, 2, 3]);
+      eq(joinedString, '1,2,3');
+    },
+    'If separator, it should separate array element with specified separator.': function () {
+      var joinedString = join([1, 2, 3], '');
+      eq(joinedString, '123');
+    },
+    'If an element is undefined, null or an empty array [], it should be converted to an empty string.': function () {
+      var joinedString = join([1, undefined, 2], '');
+      eq(joinedString, '12');
+    },
+    'If an element is NaN, it should be joined as string "NaN".': function () {
+      var joinedString = join([, 1, undefined, NaN], '');
+      eq(joinedString, '1NaN');
+    },
+    'It should work with array-like object.': function () {
+      var object = {
+        0: "Water",
+        1: "Fire",
+        length: 2
+      };
+      var joinedString = join(object, ' and ');
+      eq(joinedString, 'Water and Fire');
+    },
+  });
+</script>

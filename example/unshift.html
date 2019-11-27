@@ -1,0 +1,66 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // unshift(array, element1[, ...[elementN]]);
+      // elementN - the elements to add to the front of the array.
+
+  // Return value
+    // the new length property of the array.
+
+  var unshift = function (array) {
+    if (arguments.length < 2) return array.length;
+    var argCount = arguments.length - 1;
+
+    array.length += argCount;
+
+    for (var i = array.length - 1; i >= argCount; i--) {
+      array[i] = array[i - argCount];
+    }
+
+    for (var j = 0; j < argCount; j++) {
+      array[j] = arguments[j + 1];
+    }
+
+    return array.length;
+  };
+
+  tests({
+    'If no element, it should immediately return array.length.': function () {
+      var count = unshift([]);
+      eq(count, 0);
+
+      var count = unshift([1, 2, 3]);
+      eq(count, 3);
+
+      var count = unshift([,,,]);
+      eq(count, 3);
+    },
+    'If element, it should add the element to the front of the array.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [0, 1, 2, 3];
+      unshift(originalArray, 0);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'If multiple elements, it should add theme in the exact same order they were passed as parameters.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [-1, 0, 1, 2, 3];
+      unshift(originalArray, -1, 0);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+
+      var originalArray = [1, 2, 3];
+      var expectedArray = [-2, [-1, 0], 1, 2, 3];
+      unshift(originalArray, -2, [-1, 0]);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'It element, it should return the new length of the array.': function () {
+      var originalArray = [1, 2, 3];
+      var count = unshift(originalArray, -2, [-1, 0]);
+      eq(count, 5);
+    },
+    'It should work with object in array-like fashion.': function () {
+      var object = {length: 0};
+      var count = unshift(object, {}, {});
+      eq(count, 2);
+    },
+  });
+</script>

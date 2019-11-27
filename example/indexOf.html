@@ -1,0 +1,72 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // indexOf(array, searchElement[, fromIndex])
+      // searchElement - element to locate in the array.
+      // fromIndex - The index to start the search at.
+
+  // Return value:
+    // The first index at which a given element can be found, or -1 if not found.
+
+  var indexOf = function (array, searchElement, fromIndex) {
+    var length = array.length;
+    var arrayIndexes = Object.keys(array);
+    var index = fromIndex ? fromIndex : 0;
+
+    // If array is empty or no searchElement, return -1.
+    if (arrayIndexes.length === 0 || arguments.length < 2) return -1;
+
+
+    // If index is greater than or equal to 0, let i be index.
+    // If index is less than 0, let i be length - Math.abs(index).
+      // If i is less than 0, let i be 0.
+    var i = Math.max(index >= 0 ? index : length - Math.abs(index), 0);
+
+    for (; i < length; i++) {
+      if (i in array && array[i] === searchElement) {
+        return i;
+      }
+    }
+
+    return -1;
+  };
+
+  tests({
+    'If array is empty, it should return -1.': function () {
+      var foundIndex = indexOf([], 1);
+      eq(foundIndex, -1);
+    },
+    'If no searchElement, it should return -1.': function () {
+      var foundIndex = indexOf([1, 2, 3]);
+      eq(foundIndex, -1);
+    },
+    'If the given element can be found, it should return the first index of that element.': function () {
+      var foundIndex = indexOf([1, 2, 3], 3);
+      eq(foundIndex, 2);
+    },
+    'If the given element can not be found, it should return -1.': function () {
+      var foundIndex = indexOf([1, 2, 3], 0);
+      eq(foundIndex, -1);
+    },
+    'It should exclude holes in the array.': function () {
+      var foundIndex = indexOf([,,,,], undefined);
+      eq(foundIndex, -1);
+    },
+    'If no fromIndex, the whole array should be searched.': function () {
+      var foundIndex = indexOf([1, 2, 3, 0], 0);
+      eq(foundIndex, 3);
+    },
+    'If 0 <= fromIndex < array.length, it should start the search at fromIndex.': function () {
+      var foundIndex = indexOf([1, 2, 2, 2], 2, 2);
+      eq(foundIndex, 2);
+    },
+    'If fromIndex >= array.length, it should return -1.': function () {
+      var foundIndex = indexOf([1, 2, 3], 1, 3);
+      eq(foundIndex, -1);
+    },
+    'If fromIndex < 0, it should take fromIndex as the offset from the end of the array.': function () {
+      var foundIndex = indexOf([1, 2, 3], 3, -2);
+      eq(foundIndex, 2);
+    },
+  });
+</script>

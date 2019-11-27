@@ -1,0 +1,123 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // some(array, callback[, optionalThis]);
+
+  // Callback arguments:
+      // element - the current element in the array.
+      // index - the index of the current element in the array.
+      // array - the array that `some` was called on.
+
+  // Return value:
+    // true if callback function returns a truthy value for at least one element in the array. Otherwise false.
+
+  var some = function (array, callback, optionalThis) {
+    var length = array.length;
+    var someCallback = callback;
+
+    if (optionalThis) {
+      someCallback = callback.bind(optionalThis);
+    }
+
+    for (var i = 0; i < length; i++) {
+      if (i in array && someCallback(array[i], i, array)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  tests({
+    'It should run the callback once for each element of the array.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      some([1, 2, 3], function () {
+        numberOfTimesCallbackHasRun++;
+        return false;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'It should exclude holes in the array.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      some([,,,], function () {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 0);
+    },
+    'It should pass in ith element as the first argument to the callback.': function () {
+      some([1], function (number) {
+        eq(number, 1);
+      });
+    },
+    'It should pass in ith position as the second argument to the callback.': function () {
+      some([1], function (number, index) {
+        eq(index, 0);
+      });
+    },
+    'It should pass in the array as the third argument to the callback.': function () {
+      var testArray = [1];
+      some(testArray, function (number, index, array) {
+        eq(testArray, array);
+      });
+    },
+    'It should have an option this object.': function () {
+      var optionalThis = { name: 'Phuong' };
+      some([1], function (number) {
+        eq(this.name, 'Phuong');
+      }, optionalThis);
+    },
+    'It should immediately return true until it finds the one where callback returns a truthy value.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      var someResult = some([1, 2, 3], function (number) {
+        numberOfTimesCallbackHasRun++;
+        return number > 1;
+      });
+      eq(numberOfTimesCallbackHasRun, 2);
+      eq(someResult, true);
+    },
+    'It should return false if callback returns a falsy value for all elements.': function () {
+      var someResult = some([1, 2, 3], function (number) {
+        return number > 3;
+      });
+      eq(someResult, false);
+    },
+    'It should not run the callback with any elements added to the array after the call to `some` begins.': function () {
+      var testArray = [1, 2, 3];
+      var numberOfTimesCallbackHasRun = 0;
+      var someResult = some(testArray, function (number, index) {
+        numberOfTimesCallbackHasRun ++;
+        if (index === 0) {
+          testArray.push(4);
+        }
+
+        return number > 3;
+      });
+
+      eq(numberOfTimesCallbackHasRun, 3);
+      eq(someResult, false);
+    },
+    'If an existing, yet-unvisited element of the array is changed by callback, its value passed to the callback will be the value at the time `some` visits the index.': function () {
+      var testArray = [1, 2, 4];
+      var someResult = some(testArray, function (number, index) {
+        if (index === 0) {
+          testArray[2] = 3;
+        }
+        return number === 3;
+      });
+      eq(someResult, true);
+    },
+    'It should not run the callback for elements that are deleted.': function () {
+      var testArray = [1, 2, 3];
+      var numberOfTimesCallbackHasRun = 0;
+      var someResult = some(testArray, function (number, index) {
+        numberOfTimesCallbackHasRun++;
+        if (index == 0) {
+          testArray.pop();
+        }
+        return false;
+      });
+      eq(numberOfTimesCallbackHasRun, 2);
+      eq(someResult, false);
+    },
+  });
+</script>

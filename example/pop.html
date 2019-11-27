@@ -1,0 +1,49 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // pop(array);
+
+  // Return value:
+    // the removed element from the array
+    // undefined if the array is empty
+
+  var pop = function (array) {
+    var length = array.length;
+
+    // Array
+    if (Array.isArray(array)) {
+      if (length === 0) return;
+
+    // Array-like object
+    } else if (Object.prototype.toString.call(array) === '[object Object]') {
+      if (length === undefined) return;
+    }
+
+    var poppedElement = array[length - 1];
+    array.length--;
+
+    return poppedElement;
+  };
+  tests({
+    'If array is empty, return undefined.': function () {
+      var poppedElement = pop([]);
+      eq(poppedElement , undefined);
+    },
+    'It should remove the last element of the array.': function () {
+      var originalArray = [1, 2, 3, 4, 5];
+      var expectedArray = [1, 2, 3, 4];
+      pop(originalArray);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'It should return the removed element.': function () {
+      var poppedElement = pop([1, 2, 3]);
+      eq(poppedElement, 3);
+    },
+    'It should work on array-like object.': function () {
+      var fishes = { 0: 'angel', 1: 'clown', 2: 'mandarin', length: 3 };
+      var poppedElement = pop(fishes);
+      eq(poppedElement, 'mandarin');
+      eq(fishes.length, 2);
+    }
+  });
+</script>

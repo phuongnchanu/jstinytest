@@ -1,0 +1,53 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // reverse(array)
+  // Return value:
+    // the reversed array
+
+  var reverse = function (array) {
+    var length = array.length;
+    var middle = Math.floor(length / 2);
+
+    for (var i = 0; i < middle; i++) {
+      var temp = array[i];
+      array[i] = array[length - i - 1];
+      array[length - i - 1] = temp;
+    }
+
+    return array;
+  };
+
+  tests({
+    'It should reverse array.': function () {
+      var array = [1, 2, 3];
+      var reversedArray = [3, 2 , 1];
+      reverse(array);
+      eq(JSON.stringify(array), JSON.stringify(reversedArray));
+    },
+    'It should work with array including holes.': function () {
+      var array = [, , 2, 2];
+      var reversedArray = [2, 2, ,,];
+      reverse(array);
+      eq(JSON.stringify(array), JSON.stringify(reversedArray));
+    },
+    'It should reverse array-like object.': function () {
+      var array = {0: 1, 1: 2, 2: 3, length: 3};
+      var reversedArray = {0: 3, 1: 2, 2: 1, length: 3};
+      reverse(array);
+      eq(JSON.stringify(array), JSON.stringify(reversedArray));
+    },
+    'It should not work with array-like object which does not contain length property.': function () {
+      var array = {0: 1, 1: 2, 2: 3};
+      var reversedArray = reverse(array);
+      eq(JSON.stringify(array), JSON.stringify(reversedArray));
+    },
+
+    'It should work with holes in array-like object.': function () {
+      var array = {0: 1, 1: 2, 2: 3, length: 5};
+      var reversedArray = {2: 3, 3: 2, 4: 1, length: 5};
+      reverse(array);
+      eq(JSON.stringify(array), JSON.stringify(reversedArray));
+    }
+  });
+</script>

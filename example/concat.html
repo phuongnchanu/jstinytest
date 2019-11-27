@@ -1,0 +1,68 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // concat(array, [value1[, value2, ...[, valueN ]]])
+      // array - the original array
+      // valueN - arrays and/or values to concatenate into a new array.
+    
+  // Return value:
+    // a new Array instance.
+
+  var concat = function (array, value) {
+    var concatedArray = array.slice();
+    var length = arguments.length;
+
+    if (length < 2) return concatedArray;
+
+    for (var i = 1; i < length; i++) {
+      var currentValue = arguments[i];
+
+      if (Array.isArray(currentValue)) {
+        for (var j = 0; j < currentValue.length; j++) {
+          concatedArray.push(currentValue[j]);
+        }
+      } else {
+        concatedArray.push(currentValue);
+      }
+    }
+    return concatedArray;
+  };
+
+  tests({
+    'It should return a new array instance.': function () {
+      var array = [1, 2, 3];
+      var concatedArray = concat(array);
+      eq(Array.isArray(concatedArray), true);
+    },
+    'If all values are omitted, it should return a shallow copy of the same elements combined from the original arrays.': function () {
+      var originalArray = [1, 2, 3];
+      var concatedArray = concat(originalArray);
+      eq(JSON.stringify(originalArray), JSON.stringify(concatedArray));
+    },
+    'It should not alter this or any of the arrays provided as arguments': function () {
+      var originalArray = [1, 2, 3];
+      var concatedArray = concat(originalArray);
+      eq(originalArray === concatedArray, false);
+    },
+    'If the argument is an array, it should concat the elements of that array.': function () {
+      var originalArray = [1, 2, 3];
+      var concatedArray = concat(originalArray, [4, 5, 6], [7]);
+      var expectedArray = [1, 2, 3, 4, 5, 6, 7];
+      eq(JSON.stringify(concatedArray), JSON.stringify(expectedArray));
+    },
+    'If the argument is not an array, it should concat the argument itself.': function () {
+      var originalArray = [1, 2 ,3];
+      var concatedArray = concat(originalArray, 4, 5 ,6);
+      var expectedArray = [1, 2, 3, 4, 5, 6];
+      eq(JSON.stringify(concatedArray), JSON.stringify(expectedArray));
+    },
+    'It should copy references into the new array.': function () {
+      var num1 = [[1]];
+      var num2 = [2, [3]];
+      var numbers = num1.concat(num2);
+      num1[0].push(4);
+      var expectedNumbers = [[1, 4], 2, [3]];
+      eq(JSON.stringify(numbers), JSON.stringify(expectedNumbers));
+    },
+  });
+</script>

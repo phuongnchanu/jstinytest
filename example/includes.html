@@ -1,0 +1,65 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // includes(array, valueToFind[, fromIndex])
+      // valueToFind - the value to search for.
+      // fromIndex - the position in the array at which to begin searching for.
+
+  // Return value
+    // true if valueToFind is found within the array. Otherwise, false.
+
+  var includes = function (array, valueToFind, fromIndex) {
+    var length = array.length;
+    var index = fromIndex || 0;
+    
+    // If index >= 0, let i be index.
+    // If index < 0, let i be length - Math.abs(index).
+      // If i < 0, let i be 0.
+    var i = Math.max(index >= 0 ? index : length - Math.abs(index), 0);
+
+    if (arguments.length < 2) return false;
+    
+    for (; i < length; i++) {
+      if (array[i] === valueToFind || (Number.isNaN(array[i]) && Number.isNaN(valueToFind))) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  tests({
+    'If no valueToFind, it should return false.': function () {
+      var includesValue = includes([1, 2, 3]);
+      eq(includesValue, false);
+    },
+    'It should return true if valueToFind is found within the array.': function () {
+      var includesValue = includes([1, 2, 3], 3);
+      eq(includesValue, true);
+    },
+    'It should return false if valueToFind is not found within the array.': function () {
+      var includesValue = includes([1, 2, 3], 0);
+      eq(includesValue, false);
+    },
+    'If 0 <= fromIndex < array.length, it should start the search at fromIndex.': function () {
+      var includesValue = includes([1, 2, 3], 1, 1);
+      eq(includesValue, false);
+    },
+    'If fromIndex >= array.length, it should return false.': function () {
+      var includesValue = includes([1, 2, 3], 3, 3);
+      eq(includesValue, false);
+    },
+    'If fromIndex < 0, it should take fromIndex as the offset from the end of the array.': function () {
+      var includesValue = includes([1, 2, 3], 3, -1);
+      eq(includesValue, true);
+    },
+    'Values of zero should be all considered to be equal regardless of sign.': function () {
+      var includesValue = includes([-0, 1, 2], 0);
+      eq(includesValue, true);
+    },
+    'If valueToFind is NaN and NaN is found within the array, it should return false.': function () {
+      var includesValue = includes([1, 2, NaN], NaN);
+      eq(includesValue, true);
+    },
+  });
+</script>

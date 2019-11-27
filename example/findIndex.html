@@ -1,0 +1,123 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // findIndex(array, callback[, optionalThis]);
+
+  // Callback arguments:
+      // element - the current element in the array.
+      // index - the index of the current element in the array.
+      // array - the array that `findIndex` was called on.
+
+  // Return value:
+    // The index of the first element in the array that satisfies the callback. Otherwise, return -1.
+
+  var findIndex = function (array, callback, optionalThis) {
+    var findIndexCallback = callback;
+    var length = array.length;
+
+    if (optionalThis) {
+      findIndexCallback = callback.bind(optionalThis);
+    }
+
+    for (var i = 0; i < length; i++) {
+      if (findIndexCallback(array[i], i, array)) {
+        return i;
+      }
+    }
+
+    return -1;
+  };
+
+  tests({
+    'It should run the callback once for each index of the array.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      findIndex([1, 2, 3], function () {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'It should pass in ith element as the first argument to the callback.': function () {
+      findIndex([1], function (number) {
+        eq(number, 1);
+      });
+    },
+    'It should pass in ith position as the second argument to the callback.': function () {
+      findIndex([1], function (number, index) {
+        eq(index, 0);
+      });
+    },
+    'It should pass in the array as the third argument to the callback.': function () {
+      var testArray = [1, 2, 3];
+      findIndex(testArray, function (number, index, array) {
+        eq(testArray, array);
+      })
+    },
+    'It should have an option this object.': function () {
+      findIndex([1], function () {
+        eq(this.name, 'Phuong');
+      }, { name: 'Phuong' });
+    },
+    'It should immediately return the index of the element that satisfies the callback.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      var findIndexResult = findIndex([1, 2, 3], function (number) {
+        numberOfTimesCallbackHasRun++;
+        return number === 2;
+      });
+      eq(numberOfTimesCallbackHasRun, 2);
+      eq(findIndexResult, 1);
+    },
+    'It should return -1 if no element satisfies the callback.': function () {
+      var findIndexResult = findIndex([1, 2, 3], function (number) {
+        return number === 0;
+      });
+      eq(findIndexResult, -1);
+    },
+    'It should return -1 if array.length equals to 0 without calling callback.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      var findIndexResult = findIndex([], function () {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 0);
+    },
+    'It should run the callback for every index of the array, not just those with assigned values.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      findIndex([,,,], function () {
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'It should not run the callback with any elements added to the array after the call to `findIndex` begins.': function () {
+      var testArray = [1, 2, 3];
+      var numberOfTimesCallbackHasRun = 0;
+      findIndex(testArray, function (number, index) {
+        if (index === 0) {
+          testArray.push(4);
+        }
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+    'If an existing, yet-unvisited element of the array is changed by callback, its value passed to the callback will be the value at the time `findIndex` visits the index.': function () {
+      var testArray = [1, 2, 4];
+      var findIndexResult = findIndex(testArray, function (number, index) {
+        if (index === 0) {
+          testArray[testArray.length - 1] = 3;
+        }
+        
+        return number === 3;
+      });
+      eq(findIndexResult, 2);
+    },
+    'It should run the callback for elements that are deleted.': function () {
+      var numberOfTimesCallbackHasRun = 0;
+      var testArray = [1, 2, 3];
+      var findIndexResult = findIndex(testArray, function (number, index) {
+        if (index === 0) {
+          delete testArray[2];
+        }
+        numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+    },
+  });
+</script>

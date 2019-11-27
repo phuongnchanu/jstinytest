@@ -1,0 +1,57 @@
+<script src="../simpletest.js"></script>
+<script>
+  // Function signature:
+    // shift(array);
+  
+  // Return value:
+    // the removed element from the array
+    // undefined if array is empty.
+
+  var shift = function (array) {
+    var length = array.length;
+
+    // Array
+    if (Array.isArray(array)) {
+      if (length === 0) return;
+
+      // Array-like object
+    } else if (Object.prototype.toString.call(array) === '[object Object]') {
+      if (length === undefined) return;
+    }
+
+    var shiftedElement = array[0];
+
+    for (var i = 0; i < length - 1; i++) {
+      array[i] = array[i + 1];
+    }
+    delete array[length - 1];
+    array.length--;
+
+    return shiftedElement;
+  };
+
+  tests({
+    'It should return undefined if array is empty.': function () {
+      var shiftedElement = shift([]);
+      eq(shiftedElement, undefined);
+    },
+    'It should removes the first element from the array.': function () {
+      var originalArray = [1, 2, 3];
+      var expectedArray = [2, 3];
+      shift(originalArray);
+      eq(JSON.stringify(originalArray), JSON.stringify(expectedArray));
+    },
+    'It should return the removed element from the array.': function () {
+      var shiftedElement = shift([1, 2, 3]);
+      eq(shiftedElement, 1);
+    },
+    'It should work on array-like object.': function () {
+      var fishes = { 0: 'angel', 1: 'clown', 2: 'mandarin', length: 3 };
+      var expectedFishes = { 0: 'clown', 1: 'mandarin', length: 2 };
+      var shiftedElement = shift(fishes);
+      eq(shiftedElement, 'angel');
+      eq(fishes.length, 2);
+      eq(JSON.stringify(fishes), JSON.stringify(expectedFishes));
+    },
+  });
+</script>
