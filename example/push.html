@@ -3,7 +3,7 @@
   // Function signature:
     // push(array, element1[, ...[elementN]]);
       // elementN - the elements to add at the end of the array.
-  
+
   // Return value
     // the new length property of the array.
 
@@ -18,8 +18,12 @@
       }
     }
 
-    for (i = 1; i < length; i++) {
-      array[array.length] = arguments[i];
+    for (i = 1; i <= arguments.length - 1; i++) {
+      if (Object.prototype.toString.call(array) === '[object Object]') {
+        array[array.length + i - 1] = arguments[i];
+      } else {
+        array[array.length] = arguments[i];
+      }
     }
 
     array.length = length + arguments.length - 1;
@@ -32,10 +36,10 @@
       var count = push([1, 2, 3]);
       eq(count, 3);
 
-      var count = push([]);
+      count = push([]);
       eq(count, 0);
 
-      var count = push([,,,]);
+      count = push([,,,]);
       eq(count, 3);
     },
     'If element, it should add the element to the end of the array.': function () {
@@ -49,6 +53,11 @@
       var array = [1, 2, 3];
       var expectedArray = [1, 2, 3, 4, 5];
       push(array, 4, 5);
+      eq(JSON.stringify(array), JSON.stringify(expectedArray));
+
+      array = ['first'];
+      expectedArray = ['first', 'last'];
+      push(array, 'last');
       eq(JSON.stringify(array), JSON.stringify(expectedArray));
     },
 
